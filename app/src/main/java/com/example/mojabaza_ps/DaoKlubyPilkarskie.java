@@ -18,7 +18,7 @@ public interface DaoKlubyPilkarskie {
     public void usunKlub(KlubPilkarski klub);
 
     @Update
-    public void edytujKlub(KlubPilkarski klub);
+    public void aktualizujKlub(KlubPilkarski klub);
 
     @Query("SELECT * FROM kluby_pilkarskie")
     public List<KlubPilkarski> zwrocWszystkieKluby();

@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextTrener;
     private Spinner spinnerLiga;
     private ListView listView;
+    private Button buttonUpdate;
+    private KlubPilkarski selectedKlub;
 
     private ArrayAdapter<KlubPilkarski> arrayAdapter;
     private List<KlubPilkarski> klubPilkarskis;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         editTextTrener = findViewById(R.id.editTextTrener);
         spinnerLiga = findViewById(R.id.spinner);
         listView = findViewById(R.id.listView);
+        buttonUpdate = findViewById(R.id.buttonUpdate);
 
         RoomDatabase.Callback mojCallback = new RoomDatabase.Callback() {
             @Override
@@ -85,6 +88,21 @@ public class MainActivity extends AppCompatActivity {
                 }
 
         );
+
+        buttonUpdate.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String nazwa = editTextNazwa.getText().toString();
+                        int miejsceWTabeli = Integer.parseInt(spinnerLiga.getSelectedItem().toString());
+                        String liga = editTextLiga.getText().toString();
+                        String trener = editTextTrener.getText().toString();
+                        KlubPilkarski klubPilkarski = new KlubPilkarski(nazwa, 1943, miejsceWTabeli, liga, trener);
+                        aktualizujKlub();
+                    }
+                }
+        );
+
         wypiszKlubyZBazy();
 
         listView.setOnItemClickListener(
@@ -141,6 +159,29 @@ public class MainActivity extends AppCompatActivity {
                                             );
                                             listView.setAdapter(arrayAdapter);
 
+                                        }
+                                    }
+                            );
+                        }
+                    }
+            );
+        }
+
+        private void aktualizujKlub(){
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executorService.execute(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            klubPilkarskis = databaseKluby.zwrocDaoKlubyPilkarskie().zwrocWszystkieKluby();
+
+                            handler.post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, "zaaktualizowano klub", Toast.LENGTH_SHORT).show();
+                                            wypiszKlubyZBazy();
                                         }
                                     }
                             );
